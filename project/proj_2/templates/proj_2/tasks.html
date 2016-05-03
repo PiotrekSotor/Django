@@ -1,0 +1,19 @@
+<form>
+
+</form>
+<table>
+    <tr>
+        <th>Kod czynnosci</th>
+        <th>Stawka</th>
+        <th>Edycja</th>
+        <th>Usuń</th>
+    </tr>
+    {% for t in  tasks %}
+    <tr>
+        <th>{{ t.task_code}}</th>
+        <th>{{t.wage}}</th>
+        <th><a href="{% url 'proj_2:task_edit' t.task_code %}">edytuj</a></th>
+        <th><a href="{% url 'proj_2:task_erase' t.task_code %}">usuń</a></th>
+    </tr>
+    {% endfor %}
+</table>

@@ -1,0 +1,22 @@
+{% if message %}
+    <br/>
+    {{ message }}
+    <br/>
+{% endif %}
+<form>
+{#add worker form#}
+</form>
+<table>
+    <tr>
+        <th>Nazwa pracownika</th>
+        <th>Edycja</th>
+        <th>Usuń</th>
+    </tr>
+    {% for w in  workers %}
+    <tr>
+        <th>{{ w.name}}</th>
+        <th><a href="{% url 'proj_2:worker_edit' w.id %}">edytuj</a></th>
+        <th><a href="{% url 'proj_2:worker_erase' w.id %}">usuń</a></th>
+    </tr>
+    {% endfor %}
+</table>

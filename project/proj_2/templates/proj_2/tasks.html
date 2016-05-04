@@ -1,3 +1,8 @@
+{% if message %}
+    <br/>
+    {{ message }}
+    <br/>
+{% endif %}
 <form>
 
 </form>
@@ -12,8 +17,8 @@
     <tr>
         <th>{{ t.task_code}}</th>
         <th>{{t.wage}}</th>
-        <th><a href="{% url 'proj_2:task_edit' t.task_code %}">edytuj</a></th>
-        <th><a href="{% url 'proj_2:task_erase' t.task_code %}">usuń</a></th>
+        <th><a href="{% url 'proj_2:task_edit' t.id %}">edytuj</a></th>
+        <th><a href="{% url 'proj_2:task_erase' t.id %}">usuń</a></th>
     </tr>
     {% endfor %}
 </table>

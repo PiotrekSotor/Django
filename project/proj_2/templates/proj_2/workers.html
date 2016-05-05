@@ -14,9 +14,9 @@
     </tr>
     {% for w in  workers %}
     <tr>
-        <th>{{ w.name}}</th>
-        <th><a href="{% url 'proj_2:worker_edit' w.id %}">edytuj</a></th>
-        <th><a href="{% url 'proj_2:worker_erase' w.id %}">usuń</a></th>
+        <td>{{ w.name}}</td>
+        <td><a href="{% url 'proj_2:worker_edit' w.id %}">edytuj</a></td>
+        <td><a href="{% url 'proj_2:worker_erase' w.id %}">usuń</a></td>
     </tr>
     {% endfor %}
 </table>

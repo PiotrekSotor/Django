@@ -3,22 +3,43 @@
     {{ message }}
     <br/>
 {% endif %}
-<form>
+<form method="post" action="{% url 'proj_2:task_submit_form' %}">
+{% csrf_token %}
+    <table>
+        <tr>
+            <td>{{ form.task_code.label_tag }}</td>
+            <td>{{ form.task_code }}</td>
+        </tr>
+        <tr>
+            <td>{{ form.wage.label_tag }}</td>
+            <td>{{ form.wage }}</td>
+        </tr>
+    </table>
+    {{ form.id }}
+{#{{ form.as_p }}#}
+{#    <b>{{ form.id }}</b>#}
+
+    {% if edit %}
+        <input type="submit" value="Zatwierdź">
+    {% else %}
+        <input type="submit" value="Dodaj">
+    {% endif %}
+    {#add task form#}
 
 </form>
 <table>
     <tr>
-        <th>Kod czynnosci</th>
+        <th><a href="{% url 'proj_2:tasks' %}">Kod czynnosci</th>
         <th>Stawka</th>
         <th>Edycja</th>
         <th>Usuń</th>
     </tr>
     {% for t in  tasks %}
     <tr>
-        <th>{{ t.task_code}}</th>
-        <th>{{t.wage}}</th>
-        <th><a href="{% url 'proj_2:task_edit' t.id %}">edytuj</a></th>
-        <th><a href="{% url 'proj_2:task_erase' t.id %}">usuń</a></th>
+        <td>{{ t.task_code }}</td>
+        <td>{{ t.wage }}</td>
+        <td><a href="{% url 'proj_2:task_edit' t.id %}">edytuj</a></td>
+        <td><a href="{% url 'proj_2:task_erase' t.id %}">usuń</a></td>
     </tr>
     {% endfor %}
 </table>

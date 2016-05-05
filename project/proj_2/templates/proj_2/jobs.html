@@ -17,12 +17,12 @@
     </tr>
     {% for j in  jobs %}
     <tr>
-        <th>{{ j.date}}</th>
-        <th>{{ j.person.name}}</th>
-        <th>{{ j.task_code}}</th>
-        <th>{{ j.count}}</th>
-        <th><a href="{% url 'proj_2:job_edit' j.id %}">edytuj</a></th>
-        <th><a href="{% url 'proj_2:job_erase' j.id %}">usuń</a></th>
+        <td>{{ j.date}}</td>
+        <td>{{ j.person.name}}</td>
+        <td>{{ j.task_code}}</td>
+        <td>{{ j.count}}</td>
+        <td><a href="{% url 'proj_2:job_edit' j.id %}">edytuj</a></td>
+        <td><a href="{% url 'proj_2:job_erase' j.id %}">usuń</a></td>
     </tr>
     {% endfor %}
 </table>

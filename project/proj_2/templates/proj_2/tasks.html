@@ -16,8 +16,6 @@
         </tr>
     </table>
     {{ form.id }}
-{#{{ form.as_p }}#}
-{#    <b>{{ form.id }}</b>#}
 
     {% if edit %}
         <input type="submit" value="Zatwierdź">
@@ -27,9 +25,10 @@
     {#add task form#}
 
 </form>
+<a href="{% url 'proj_2:index' %}">Strona startowa</a>
 <table>
     <tr>
-        <th><a href="{% url 'proj_2:tasks' %}">Kod czynnosci</th>
+        <th>Kod czynnosci</th>
         <th>Stawka</th>
         <th>Edycja</th>
         <th>Usuń</th>

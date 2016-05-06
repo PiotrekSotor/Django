@@ -1,0 +1,45 @@
+{% if message %}
+    {{ message }}
+    <br/>
+    <br/>
+{% endif %}
+<form method="get" action="{% url 'proj_2:aggregator_form' %}">
+    <table>
+        <tr>
+            <td>{{ form.startdate.label_tag }}</td>
+            <td>{{ form.startdate}}</td>
+        </tr>
+        <tr>
+            <td>{{ form.enddate.label_tag }}</td>
+            <td>{{ form.enddate}}</td>
+        </tr>
+        <tr>
+            <td>{{ form.workers.label_tag }}</td>
+            <td>{{ form.workers}}</td>
+        </tr>
+        <tr>
+            <td>{{ form.tasks.label_tag }}</td>
+            <td>{{ form.tasks}}</td>
+        </tr>
+    </table>
+    <input type="submit" value="Agreguj">
+</form>
+<a href="{% url 'proj_2:index' %}">Strona startowa</a>
+{% for w in workers %}
+    Pracownik: {{ w.name }}
+    Suma ogólna: {{ w.sum_overall }}
+    <table>
+        <tr>
+            <th>Kod czynności</th>
+            <th>Liczba wystąpień</th>
+            <th>Suma</th>
+        </tr>
+    {% for t in w.tasks %}
+        <tr>
+            <td>t.task_code</td>
+            <td>t.count</td>
+            <td>t.sum</td>
+        </tr>
+    {% endfor %}
+    </table>
+{% endfor %}

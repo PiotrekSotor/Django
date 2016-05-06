@@ -1,0 +1,37 @@
+{% if message %}
+    {{ message }}
+    <br/>
+    <br/>
+{% endif %}
+<form method="post" action="{% url 'proj_2:worker_submit_form' %}">
+{% csrf_token %}
+    <table>
+        <tr>
+            <td>{{ form.name.label_tag }}</td>
+            <td>{{ form.name}}</td>
+        </tr>
+    </table>
+    {{ form.id }}
+{#{{ form.as_p }}#}
+    {% if edit %}
+        <input type="submit" value="Zatwierdź">
+    {% else %}
+        <input type="submit" value="Dodaj">
+    {% endif %}
+
+</form>
+<a href="{% url 'proj_2:index' %}">Strona startowa</a>
+<table>
+    <tr>
+        <th>Nazwa pracownika</th>
+        <th>Edycja</th>
+        <th>Usuń</th>
+    </tr>
+    {% for w in  workers %}
+    <tr>
+        <td>{{ w.name}}</td>
+        <td><a href="{% url 'proj_2:worker_edit' w.id %}">edytuj</a></td>
+        <td><a href="{% url 'proj_2:worker_erase' w.id %}">usuń</a></td>
+    </tr>
+    {% endfor %}
+</table>

@@ -1,0 +1,57 @@
+{% if message %}
+    {{ message }}
+    <br/>
+    <br/>
+{% endif %}
+<form method="post" action="{% url 'proj_2:job_submit_form' %}">
+{% csrf_token %}
+    <table>
+        <tr>
+            <td>{{ form.task_code_field.label_tag }}</td>
+            <td>{{ form.task_code_field}}</td>
+            <td>{{ form.task_code_combobox }}</td>
+        </tr>
+        <tr>
+            <td>{{ form.worker_field.label_tag }}</td>
+            <td>{{ form.worker_field}}</td>
+            <td>{{ form.worker_combobox }}</td>
+        </tr>
+        <tr>
+            <td>{{ form.count.label_tag }}</td>
+            <td>{{ form.count}}</td>
+        </tr>
+        <tr>
+            <td>{{ form.date.label_tag }}</td>
+            <td>{{ form.date}}</td>
+        </tr>
+    </table>
+    {{ form.id }}
+{#{{ form.as_p }}#}
+    {% if edit %}
+        <input type="submit" value="Zatwierdź">
+    {% else %}
+        <input type="submit" value="Dodaj">
+    {% endif %}
+
+</form>
+<a href="{% url 'proj_2:index' %}">Strona startowa</a>
+<table>
+    <tr>
+        <th>Data</th>
+        <th>Pracownik</th>
+        <th>Czynność</th>
+        <th>Ilość</th>
+        <th>Edycja</th>
+        <th>Usuń</th>
+    </tr>
+    {% for j in  jobs %}
+    <tr>
+        <td>{{ j.date|date:"Y-m-d" }}</td>
+        <td>{{ j.person.name }}</td>
+        <td>{{ j.task_code }}</td>
+        <td>{{ j.count }}</td>
+        <td><a href="{% url 'proj_2:job_edit' j.id %}">edytuj</a></td>
+        <td><a href="{% url 'proj_2:job_erase' j.id %}">usuń</a></td>
+    </tr>
+    {% endfor %}
+</table>

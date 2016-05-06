@@ -8,7 +8,7 @@ class Task(models.Model):
     wage = models.FloatField(default=0)
     
     def __str__(self):
-        return "%s - %s" % (self.task_code, self.wage)
+        return "%s" % (self.task_code)
     
 class Worker(models.Model):
     name = models.CharField(max_length=200, unique=1)

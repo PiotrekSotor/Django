@@ -34,10 +34,12 @@ class JobForm(forms.Form):
         super().__init__(*args, **kwargs)
 
 class AggregatorForm(forms.Form):
-    startdate = forms.DateField(required=1)
-    enddate = forms.DateField(required=1)
-    workers = forms.ModelMultipleChoiceField(queryset=Worker.objects.order_by('name'), required=1)
-    tasks = forms.ModelMultipleChoiceField(queryset=Task.objects.order_by('task_code'),required=1)
+    startdate = forms.DateField(required=1, label='Data początkowa')
+    enddate = forms.DateField(required=1, label='Data końcowa')
+    workers = forms.ModelMultipleChoiceField(queryset=Worker.objects.order_by('name'),  label='Pracownicy (wiele)', required=0)
+    tasks = forms.ModelMultipleChoiceField(queryset=Task.objects.order_by('task_code'), label='Czynności (wiele)', required=0)
+    all_workers = forms.BooleanField(label='Wszyscy', required=0)
+    all_tasks = forms.BooleanField(label='Wszytkie', required=0)
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

@@ -16,10 +16,14 @@
         <tr>
             <td>{{ form.workers.label_tag }}</td>
             <td>{{ form.workers}}</td>
+            <td>{{ form.all_workers.label_tag }}</td>
+            <td>{{ form.all_workers }}</td>
         </tr>
         <tr>
             <td>{{ form.tasks.label_tag }}</td>
             <td>{{ form.tasks}}</td>
+            <td>{{ form.all_tasks.label_tag }}</td>
+            <td>{{ form.all_tasks }}</td>
         </tr>
     </table>
     <input type="submit" value="Agreguj">
@@ -36,10 +40,47 @@
         </tr>
     {% for t in w.tasks %}
         <tr>
-            <td>t.task_code</td>
-            <td>t.count</td>
-            <td>t.sum</td>
+            <td>{{ t.task_code}}</td>
+            <td>{{t.count}}</td>
+            <td>{{ t.sum}}</td>
         </tr>
     {% endfor %}
     </table>
 {% endfor %}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

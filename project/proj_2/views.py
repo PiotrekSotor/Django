@@ -4,6 +4,7 @@ from .forms import TaskForm, WorkerForm, JobForm, AggregatorForm
 from django.db import IntegrityError
 import datetime
 from datetime import date
+from django.db.models import Sum, Count
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.template import Context
@@ -161,7 +162,7 @@ def job_edit(request, job_id):
     initials = {'worker_combobox': job.person_id,
                 'task_code_combobox': job.task_code_id,
                 'count': job.count,
-                'date':job.date,
+                'date': job.date,
                 'id': job.id}
     form = JobForm(initial=initials)
     context = {'form': form, 'edit': 1}
@@ -183,9 +184,67 @@ def jobs(request, message='', context={}):
         context['form'] = JobForm()
     return render(request, "proj_2/jobs.html", context)
 
+
 def aggregator(request, message='', context={}):
-    context['form'] = AggregatorForm(initial= {'startdate': date(date.today().year, date.today().month, 1),'enddate': date.today()})
+    if message:
+        context['message'] = message
+    if 'forn' not in context:
+        context['form'] = AggregatorForm(
+            initial={'startdate': date(date.today().year, date.today().month, 1), 'enddate': date.today()})
     return render(request, "proj_2/aggregator.html", context)
 
+
 def aggregator_form(request):
-    return aggregator(request)
+    if request.method == 'GET':
+
+        form = AggregatorForm(request.GET)
+        if form.is_valid():
+            print('valided', form.cleaned_data)
+            context = {}
+            workers = []
+            if form.cleaned_data['all_workers']:
+                workers_to_search = Worker.objects.all()
+            else:
+                workers_to_search = form.cleaned_data['workers']
+            if form.cleaned_data['all_tasks']:
+                all = Task.objects.all()
+                tasks_to_search = []
+                for a in all:
+                    tasks_to_search += [a.id]
+            else:
+                all = form.cleaned_data['tasks']
+                tasks_to_search = []
+                for a in all:
+                    task = Task.objects.get(task_code=a)
+                    tasks_to_search += [task.id]
+            print('Workers to search: ',workers_to_search)
+            print('Tasks to search:   ',tasks_to_search)
+            for w in workers_to_search:
+                sum_overall = 0
+                worker = {'name': w}
+                tasks_ = []
+                res = Job.objects.filter(person__name=w)\
+                    .filter(date__lte=form.cleaned_data['enddate'])\
+                    .filter(date__gte=form.cleaned_data['startdate'])\
+                    .values('task_code')\
+                    .annotate(Count('count'), Sum('count'))
+                print('Results: ', res)
+                for r in res:
+                    if not  r['task_code'] in tasks_to_search:
+                        continue
+                    count = r['count__count']
+                    task_code_id = r['task_code']
+                    sum = r['count__sum']
+                    task = get_object_or_404(Task, pk=task_code_id)
+                    # task = Task.objects.get(task_code=task_code_id)
+                    sum *= task.wage
+                    sum_overall += sum
+                    tasks_ += [{'task_code': task.task_code, 'count': count, 'sum': sum}]
+                worker['tasks'] = tasks_
+                workers += [worker]
+            context['workers'] = workers
+            return aggregator(request, message='Alles Gut', context=context)
+        else:
+            print(form.errors)
+            return aggregator(request, message='Not valid')
+    return aggregator(request, message='Not GET')

@@ -205,11 +205,11 @@ def aggregator_form(request):
             workers = []
             task_summary = collections.defaultdict(dict)
             if form.cleaned_data['all_workers']:
-                workers_to_search = Worker.objects.all()
+                workers_to_search = Worker.objects.order_by("name")
             else:
                 workers_to_search = form.cleaned_data['workers']
             if form.cleaned_data['all_tasks']:
-                all = Task.objects.all()
+                all = Task.objects.order_by("task_code")
                 tasks_to_search = []
                 for a in all:
                     tasks_to_search += [a.id]
@@ -219,51 +219,69 @@ def aggregator_form(request):
                 for a in all:
                     task = Task.objects.get(task_code=a)
                     tasks_to_search += [task.id]
-            print('Workers to search: ',workers_to_search)
-            print('Tasks to search:   ',tasks_to_search)
-
+            print('Workers to search: ', workers_to_search)
+            print('Tasks to search:   ', tasks_to_search)
             for w in workers_to_search:
                 sum_overall = 0
                 worker = {'name': w}
                 tasks_ = []
-                res = Job.objects.filter(person__name=w)\
-                    .filter(date__lte=form.cleaned_data['enddate'])\
-                    .filter(date__gte=form.cleaned_data['startdate'])\
-                    .values('task_code')\
+                res = Job.objects.filter(person__name=w) \
+                    .filter(date__lte=form.cleaned_data['enddate']) \
+                    .filter(date__gte=form.cleaned_data['startdate']) \
+                    .values('task_code') \
                     .annotate(Count('count'), Sum('count'))
                 print('Results: ', res)
                 for r in res:
-                    if not  r['task_code'] in tasks_to_search:
+                    if not r['task_code'] in tasks_to_search:
                         continue
                     count = r['count__count']
                     task_code_id = r['task_code']
                     sum_of_count = r['count__sum']
                     task = get_object_or_404(Task, pk=task_code_id)
                     sum = sum_of_count * task.wage
-                    task_summary[task.task_code]['task_code'] = task.task_code
+
+                    if 'task_code' not in task_summary[task.task_code]:
+                        task_summary[task.task_code]['task_code'] = task.task_code
+
                     if 'count' in task_summary[task.task_code]:
                         task_summary[task.task_code]['count'] += count
                     else:
                         task_summary[task.task_code]['count'] = count
+
                     if 'sum_of_count' in task_summary[task.task_code]:
                         task_summary[task.task_code]['sum_of_count'] += sum_of_count
                     else:
                         task_summary[task.task_code]['sum_of_count'] = sum_of_count
+
                     if 'sum' in task_summary[task.task_code]:
                         task_summary[task.task_code]['sum'] += sum
                     else:
                         task_summary[task.task_code]['sum'] = sum
+
                     # task = Task.objects.get(task_code=task_code_id)
                     sum_overall += sum
                     tasks_ += [{'task_code': task.task_code, 'count': count, 'sum': sum, 'sum_of_count': sum_of_count}]
                 worker['tasks'] = tasks_
                 worker['sum_overall'] = sum_overall
                 workers += [worker]
+            final_task_summary = []
+            for t in task_summary:
+                final_task_summary += [{'task_code': task_summary[t]['task_code'],
+                                        'count': task_summary[t]['count'],
+                                        'sum_of_count':task_summary[t]['sum_of_count'],
+                                        'sum':task_summary[t]['sum']}]
             context['workers'] = workers
             print(task_summary)
-            context['tasks_summary'] = task_summary
+            context['tasks_summary'] = final_task_summary
             return aggregator(request, message='Alles Gut', context=context)
         else:
             print(form.errors)
             return aggregator(request, message='Not valid')
     return aggregator(request, message='Not GET')
+
+#
+# class TaskInSummary
+#     task_code = ''
+#     count = 0
+#     sum = 0
+#     sum_of_count = 0

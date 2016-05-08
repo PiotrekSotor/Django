@@ -28,7 +28,7 @@
     </table>
     <input type="submit" value="Agreguj">
 </form>
-<a href="{% url 'proj_2:index' %}">Strona startowa</a>
+<a href="{% url 'proj_2:index' %}">Strona startowa</a><br/>
 {% for w in workers %}
     Pracownik: {{ w.name }}
     Suma ogólna: {{ w.sum_overall }}
@@ -36,19 +36,39 @@
         <tr>
             <th>Kod czynności</th>
             <th>Liczba wystąpień</th>
-            <th>Suma</th>
+            <th>Suma czynności</th>
+            <th>Kwota</th>
         </tr>
     {% for t in w.tasks %}
         <tr>
             <td>{{ t.task_code}}</td>
             <td>{{t.count}}</td>
+            <td>{{ t.sum_of_count}}</td>
             <td>{{ t.sum}}</td>
         </tr>
     {% endfor %}
     </table>
+    <br/>
 {% endfor %}
 
-
+{{ tasks_summary }}
+<table>
+    <tr>
+        <th>Kod czynności</th>
+        <th>Liczba wystąpień</th>
+        <th>Suma czynności</th>
+        <th>Kwota</th>
+    </tr>
+{% for t in tasks_summary %}
+    <tr>
+        <td>{{ t }}</td>
+        <td>{{ t.task_code }}</td>
+        <td>{{ t.count }}</td>
+        <td>{{ t.sum_of_count }}</td>
+        <td>{{ t.sum }}</td>
+    </tr>
+{% endfor %}
+</table>
 
 
 

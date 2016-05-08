@@ -5,6 +5,7 @@ from django.db import IntegrityError
 import datetime
 from datetime import date
 from django.db.models import Sum, Count
+import collections
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.template import Context
@@ -202,6 +203,7 @@ def aggregator_form(request):
             print('valided', form.cleaned_data)
             context = {}
             workers = []
+            task_summary = collections.defaultdict(dict)
             if form.cleaned_data['all_workers']:
                 workers_to_search = Worker.objects.all()
             else:
@@ -219,6 +221,7 @@ def aggregator_form(request):
                     tasks_to_search += [task.id]
             print('Workers to search: ',workers_to_search)
             print('Tasks to search:   ',tasks_to_search)
+
             for w in workers_to_search:
                 sum_overall = 0
                 worker = {'name': w}
@@ -234,15 +237,31 @@ def aggregator_form(request):
                         continue
                     count = r['count__count']
                     task_code_id = r['task_code']
-                    sum = r['count__sum']
+                    sum_of_count = r['count__sum']
                     task = get_object_or_404(Task, pk=task_code_id)
+                    sum = sum_of_count * task.wage
+                    task_summary[task.task_code]['task_code'] = task.task_code
+                    if 'count' in task_summary[task.task_code]:
+                        task_summary[task.task_code]['count'] += count
+                    else:
+                        task_summary[task.task_code]['count'] = count
+                    if 'sum_of_count' in task_summary[task.task_code]:
+                        task_summary[task.task_code]['sum_of_count'] += sum_of_count
+                    else:
+                        task_summary[task.task_code]['sum_of_count'] = sum_of_count
+                    if 'sum' in task_summary[task.task_code]:
+                        task_summary[task.task_code]['sum'] += sum
+                    else:
+                        task_summary[task.task_code]['sum'] = sum
                     # task = Task.objects.get(task_code=task_code_id)
-                    sum *= task.wage
                     sum_overall += sum
-                    tasks_ += [{'task_code': task.task_code, 'count': count, 'sum': sum}]
+                    tasks_ += [{'task_code': task.task_code, 'count': count, 'sum': sum, 'sum_of_count': sum_of_count}]
                 worker['tasks'] = tasks_
+                worker['sum_overall'] = sum_overall
                 workers += [worker]
             context['workers'] = workers
+            print(task_summary)
+            context['tasks_summary'] = task_summary
             return aggregator(request, message='Alles Gut', context=context)
         else:
             print(form.errors)
